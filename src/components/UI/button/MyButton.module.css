@@ -1,0 +1,12 @@
+.myBtn {
+    padding: 5px 15px;
+    color: saddlebrown;
+    font-size: 14px;
+    background: transparent;
+    border: 1px solid saddlebrown;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-style: italic;
+    box-shadow: 4px 4px 14px rgba(0, 0, 0, 0.25);
+}
