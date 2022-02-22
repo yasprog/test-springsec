@@ -3,6 +3,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+
 }
 
 /*Для блока root*/
@@ -11,23 +12,24 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+
 }
 
 /*для класса App*/
-.App {
+.Dev  {
     width: 800px;
 }
 
-.post {
+.developer {
     display: flex;
     padding: 15px;
-    border: 2px solid teal; /*solid - сплошная, teal - зеленого цвета*/
+    border: 2px solid saddlebrown; /*solid - сплошная, teal - зеленого цвета*/
     margin-top: 15px; /*внешний отступ сверху*/
     justify-content: space-between; /*  распределение пространства элементами контента и вокруг них */
     align-items: center; /*вертикальное выравнивание*/
 }
 
-.post__btns {
+.developer__btns {
     display: flex;
 }
 
@@ -53,7 +55,7 @@
 }
  .page {
      padding: 10px;
-     border: 1px solid teal;
+     border: 1px solid saddlebrown;
      cursor: pointer;
  }
 

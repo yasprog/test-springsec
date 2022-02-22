@@ -15,7 +15,7 @@ const Login = () => {
         console.log(user)
         const response = await PostService.getToken(user).then(data => {
             setToken(data.data.token)
-            localStorage.setItem("Token", JSON.stringify(data.data.token))
+            localStorage.setItem("token", JSON.stringify(data.data.token))
             console.log(JSON.stringify(data.data.token))
         });
 
