@@ -3,24 +3,27 @@ import axios from "axios";
 const serv = 'http://localhost:8080/'
 export default class DeveloperService {
 
-    static async getAllDev(props) {
+    static async getAllDev(token) {
         // const {token} = useContext(AuthContext)
-        let config = {
+
+
+        try {
+            let config = {
             headers: {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-                'Authorization': props
+                'Authorization': token
             }
         }
+            const response = await axios.get(serv + 'api/v1/developers/', config)
+            return response.data
+        }
+        catch (e) {
+            console.log(e)
+        }
 
-
-        // const headers = {
-        //     'Content-Type': 'application/json',
-        //     'Access-Control-Allow-Origin': '*',
-        //     'Authorization': props}
-        // console.log(headers)
-        const response = await axios.get(serv + 'api/v1/developers/', config)
     }
+
+
 
     static async getToken(user) {
 

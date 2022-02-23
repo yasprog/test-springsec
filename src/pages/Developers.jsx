@@ -1,4 +1,4 @@
-import React, {useContext, useMemo, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import MyButton from "../components/UI/button/MyButton";
 import DeveloperList from "../components/DeveloperList";
 import {AuthContext} from "../context";
@@ -7,27 +7,19 @@ import DeveloperForm from "../components/DeveloperForm";
 import DeveloperFilter from "../components/DeveloperFilter";
 import MyModal from "../components/MyModal/MyModal";
 import {useDevelopers} from "../hook/useDevelopers";
+import axios from "axios";
 
 const Developers = () => {
     const {token, setToken} = useContext(AuthContext)
     console.log('из контекста')
     console.log(token)
-    const [developers, setDevelopers] = useState([{
-        firstName: "Ivan",
-        lastName: "Ivanov",
-        skills: "Java, React JS",
-        id: "1"
-    }, {
-        firstName: "Pert",
-        lastName: "Pivanov",
-        skills: "React JS",
-        id: "2"
-    }])
+    const [developers, setDevelopers] = useState([])
 
 
-    const getDevelopers = async event => {
+    const getDevelopers =  async event => {
         event.preventDefault()
-        console.log(await DeveloperService.getAllDev(token))
+        const qqq = await DeveloperService.getAllDev(token)
+        console.log(qqq)
 
     }
 
@@ -39,6 +31,10 @@ const Developers = () => {
 
     const sortedAndSeacrhedDevelopers = useDevelopers(developers, filter.sort, filter.query)
 
+    useEffect(() => {
+        fetchDevelopers()
+    }, [])
+
 
 
 
@@ -48,6 +44,18 @@ const Developers = () => {
     const createDeveloper = (newDeveloper) => {
         setDevelopers([...developers, newDeveloper])
         setModal(false)
+    }
+
+    async function fetchDevelopers () {
+        let config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        }
+        const serv = 'http://localhost:8080/'
+        const developers = await DeveloperService.getAllDev(token)
+       setDevelopers(developers)
     }
 
     //Получаем девелопера из дочернего компонента
@@ -73,7 +81,7 @@ const Developers = () => {
            <DeveloperFilter
                filter={filter}
                setFilter={setFilter}/>
-
+            <MyButton onClick={fetchDevelopers}>Кнопка fetch</MyButton>
             <MyButton onClick={getDevelopers}>Загрузить</MyButton>
 
                 <DeveloperList remove={removeDeveloper} developers={sortedAndSeacrhedDevelopers} title="Девелоперы"/>
