@@ -11,7 +11,8 @@ const DeveloperItem = (props) => {
                 </div>
             </div>
             <div className="developer__btn">
-                <MyButton>Удалить</MyButton>
+                <MyButton onClick={() => {props.remove(props.developer)}}>Удалить</MyButton>
+                 {/*из props получаем функцию удаления и текущего девелопера*/}
             </div>
         </div>
     );

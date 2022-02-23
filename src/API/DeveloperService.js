@@ -2,7 +2,7 @@ import axios from "axios";
 import {useContext} from "react";
 import {AuthContext} from "../context";
 const serv = 'http://localhost:8080/'
-export default class PostService{
+export default class DeveloperService {
 
     static async getAllDev(props) {
         // const {token} = useContext(AuthContext)

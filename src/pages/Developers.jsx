@@ -1,15 +1,17 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useMemo, useState} from 'react';
 import MyButton from "../components/UI/button/MyButton";
 import DeveloperItem from "../components/DeveloperItem";
 import DeveloperList from "../components/DeveloperList";
 import MyInput from "../components/UI/input/MyInput";
 import {AuthContext} from "../context";
-import PostService from "../API/PostService";
+import DeveloperService from "../API/DeveloperService";
+import DeveloperForm from "../components/DeveloperForm";
+import MySelect from "../components/UI/select/MySelect";
+import DeveloperFilter from "../components/DeveloperFilter";
 
 const Developers = () => {
     const {token, setToken} = useContext(AuthContext)
-    const [developer, setDeveloper] = useState({firstName: '', lastName: '', skills: ''})
-
+    console.log('из контекста')
     console.log(token)
     const [developers, setDevelopers] = useState([{
         firstName: "Ivan",
@@ -26,40 +28,63 @@ const Developers = () => {
 
     const getDevelopers = async event => {
         event.preventDefault()
-        console.log(await PostService.getAllDev(token))
+        console.log(await DeveloperService.getAllDev(token))
 
     }
 
-    const addNewDeveloper = (e) => {
-        e.preventDefault()
+    // const [selectedSort, setSelectedSort] = useState('')
+    // const [searchQuery, setSearchQuery] = useState('') //поисковая строка
 
-        setDevelopers([...developers, {...developer, id: Date.now()}])
-        setDeveloper({firstName: '', lastName: '', skills: ''})
+    const [filter, setFilter] = useState({sort: '', query: ''}) //режим сортировки и поисковая строка
+
+
+    const sortedDevelopers = useMemo(()=> {
+        if (filter.sort) {
+            return [...developers].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]))
+        }
+        return developers
+    }, [filter.sort, developers])
+
+    const sortedAndSeacrhedDevelopers = useMemo(() => {
+        return sortedDevelopers.filter(developer => developer.firstName.toLowerCase().includes(filter.query.toLowerCase()) || developer.lastName.toLowerCase().includes(filter.query.toLowerCase()))
+    }, [filter.query, sortedDevelopers])
+
+    //функция обратного вызова
+    //ожидает на вход нового созданного девелопера,
+    // и добавляет его в список
+    const createDeveloper = (newDeveloper) => {
+        setDevelopers([...developers, newDeveloper])
+    }
+
+    //Получаем девелопера из дочернего компонента
+    //filter возвращает новый массив, отфильтрованный по какому-то условию
+    const removeDeveloper = (developer) => {
+        setDevelopers(developers.filter(d => d.id != developer.id))
 
     }
+
+
+
     return (
         <div className="Dev">
-            <form>
-                <MyInput
-                    value={developer.firstName}
-                    onChange={e => setDeveloper({...developer, firstName: e.target.value})}
-                    type="text" placeholder="имя..."
-                />
-                <MyInput
-                    value={developer.lastName}
-                    onChange={e => setDeveloper({...developer, lastName: e.target.value})}
-                    type="text" placeholder="фамилия..."
-                />
-                <MyInput
-                    value={developer.skills}
-                    onChange={e  => setDeveloper({...developer, skills: e.target.value})}
-                    type="text" placeholder="навыки работы..."
+            {/*передаем в компонент функцию обратного вызова*/}
+            <DeveloperForm create={createDeveloper}/>
+            <hr style={{margin: '15px 0'}}/>
+           <DeveloperFilter
+               filter={filter}
+               setFilter={setFilter}/>
 
-                />
-                <MyButton onClick={addNewDeveloper}>Добавить</MyButton>
-            </form>
             <MyButton onClick={getDevelopers}>Загрузить</MyButton>
-            <DeveloperList developers={developers} title="Девелоперы"/>
+            {sortedAndSeacrhedDevelopers.length !== 0
+                ?
+                <DeveloperList remove={removeDeveloper} developers={sortedAndSeacrhedDevelopers} title="Девелоперы"/>
+                :
+                <h1 style={{textAlign: "center"}}>
+                    Девелоперы не найдены
+                </h1>
+
+            }
+
         </div>
     );
 };

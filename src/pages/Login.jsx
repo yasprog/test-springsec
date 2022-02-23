@@ -2,7 +2,7 @@ import React, {useContext, useState} from 'react';
 import MyInput from "../components/UI/input/MyInput";
 import MyButton from "../components/UI/button/MyButton";
 import {AuthContext} from "../context";
-import PostService from "../API/PostService";
+import DeveloperService from "../API/DeveloperService";
 
 const Login = () => {
     const[user, setUser] = useState({email: 'admin@mail.com', password:'admin'}) //объект user, поля инициализируем пустыми строками
@@ -13,10 +13,11 @@ const Login = () => {
         // formDataLogin.forEach(function(value, key){
         //     objectUser[key] = value;
         console.log(user)
-        const response = await PostService.getToken(user).then(data => {
+        const response = await DeveloperService.getToken(user).then(data => {
             setToken(data.data.token)
-            localStorage.setItem("token", JSON.stringify(data.data.token))
-            console.log(JSON.stringify(data.data.token))
+            localStorage.setItem('token', data.data.token)
+            console.log(data.data.token)
+            console.log('выше респонс')
         });
 
 
