@@ -8,12 +8,17 @@ import DeveloperFilter from "../components/DeveloperFilter";
 import MyModal from "../components/MyModal/MyModal";
 import {useDevelopers} from "../hook/useDevelopers";
 import axios from "axios";
+import Loader from "../components/UI/Loader/Loader";
 
 const Developers = () => {
     const {token, setToken} = useContext(AuthContext)
     console.log('из контекста')
     console.log(token)
     const [developers, setDevelopers] = useState([])
+    const [filter, setFilter] = useState({sort: '', query: ''}) //режим сортировки и поисковая строка
+    const [modal, setModal] = useState(false) // видим ли модальное окно
+    const sortedAndSeacrhedDevelopers = useDevelopers(developers, filter.sort, filter.query)
+    const [isDevelopersLoadind, setIsDevelopersLoading] = useState(false)
 
 
     const getDevelopers =  async event => {
@@ -26,10 +31,6 @@ const Developers = () => {
     // const [selectedSort, setSelectedSort] = useState('')
     // const [searchQuery, setSearchQuery] = useState('') //поисковая строка
 
-    const [filter, setFilter] = useState({sort: '', query: ''}) //режим сортировки и поисковая строка
-    const [modal, setModal] = useState(false) // видим ли модальное окно
-
-    const sortedAndSeacrhedDevelopers = useDevelopers(developers, filter.sort, filter.query)
 
     useEffect(() => {
         fetchDevelopers()
@@ -47,15 +48,15 @@ const Developers = () => {
     }
 
     async function fetchDevelopers () {
-        let config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': token
-            }
-        }
-        const serv = 'http://localhost:8080/'
-        const developers = await DeveloperService.getAllDev(token)
-       setDevelopers(developers)
+        setIsDevelopersLoading(true)
+        setTimeout(async ()=>{
+
+            const developers = await DeveloperService.getAllDev(token)
+            setDevelopers(developers)
+            setIsDevelopersLoading(false)
+        }, 2000)
+
+
     }
 
     //Получаем девелопера из дочернего компонента
@@ -84,7 +85,12 @@ const Developers = () => {
             <MyButton onClick={fetchDevelopers}>Кнопка fetch</MyButton>
             <MyButton onClick={getDevelopers}>Загрузить</MyButton>
 
-                <DeveloperList remove={removeDeveloper} developers={sortedAndSeacrhedDevelopers} title="Девелоперы"/>
+            {isDevelopersLoadind
+                ?  <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
+                : <DeveloperList remove={removeDeveloper} developers={sortedAndSeacrhedDevelopers} title="Девелоперы"/>
+
+            }
+
 
 
         </div>
