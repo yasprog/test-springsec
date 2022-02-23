@@ -1,6 +1,5 @@
 import axios from "axios";
-import {useContext} from "react";
-import {AuthContext} from "../context";
+
 const serv = 'http://localhost:8080/'
 export default class DeveloperService {
 

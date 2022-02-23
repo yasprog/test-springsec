@@ -3,6 +3,13 @@ import DeveloperItem from "./DeveloperItem";
 
 //получаем список девелоперов, заголовок списка, функцию (обратного вызова) удаления
 const DeveloperList = ({developers, title, remove}) => {
+    if (!developers.length) {
+        return (
+            <h1 style={{textAlign: "center"}}>
+                Девелоперы не найдены
+             </h1>)
+    }
+
     return (
         <div>
             <h1 style={{textAlign: "center"}}>{title}</h1>

@@ -1,13 +1,11 @@
 import React, {useContext, useMemo, useState} from 'react';
 import MyButton from "../components/UI/button/MyButton";
-import DeveloperItem from "../components/DeveloperItem";
 import DeveloperList from "../components/DeveloperList";
-import MyInput from "../components/UI/input/MyInput";
 import {AuthContext} from "../context";
 import DeveloperService from "../API/DeveloperService";
 import DeveloperForm from "../components/DeveloperForm";
-import MySelect from "../components/UI/select/MySelect";
 import DeveloperFilter from "../components/DeveloperFilter";
+import MyModal from "../components/MyModal/MyModal";
 
 const Developers = () => {
     const {token, setToken} = useContext(AuthContext)
@@ -36,7 +34,7 @@ const Developers = () => {
     // const [searchQuery, setSearchQuery] = useState('') //поисковая строка
 
     const [filter, setFilter] = useState({sort: '', query: ''}) //режим сортировки и поисковая строка
-
+    const [modal, setModal] = useState(false) // видим ли модальное окно
 
     const sortedDevelopers = useMemo(()=> {
         if (filter.sort) {
@@ -54,6 +52,7 @@ const Developers = () => {
     // и добавляет его в список
     const createDeveloper = (newDeveloper) => {
         setDevelopers([...developers, newDeveloper])
+        setModal(false)
     }
 
     //Получаем девелопера из дочернего компонента
@@ -67,23 +66,23 @@ const Developers = () => {
 
     return (
         <div className="Dev">
+            <MyButton style={{marginTop: 30}} onClick={() => setModal(true)}>
+                Создать пользователя
+            </MyButton>
             {/*передаем в компонент функцию обратного вызова*/}
-            <DeveloperForm create={createDeveloper}/>
+            <MyModal visible={modal} setVisible={setModal}>
+                <DeveloperForm create={createDeveloper}/>
+            </MyModal>
+
             <hr style={{margin: '15px 0'}}/>
            <DeveloperFilter
                filter={filter}
                setFilter={setFilter}/>
 
             <MyButton onClick={getDevelopers}>Загрузить</MyButton>
-            {sortedAndSeacrhedDevelopers.length !== 0
-                ?
-                <DeveloperList remove={removeDeveloper} developers={sortedAndSeacrhedDevelopers} title="Девелоперы"/>
-                :
-                <h1 style={{textAlign: "center"}}>
-                    Девелоперы не найдены
-                </h1>
 
-            }
+                <DeveloperList remove={removeDeveloper} developers={sortedAndSeacrhedDevelopers} title="Девелоперы"/>
+
 
         </div>
     );
