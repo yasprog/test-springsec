@@ -6,6 +6,7 @@ import DeveloperService from "../API/DeveloperService";
 import DeveloperForm from "../components/DeveloperForm";
 import DeveloperFilter from "../components/DeveloperFilter";
 import MyModal from "../components/MyModal/MyModal";
+import {useDevelopers} from "../hook/useDevelopers";
 
 const Developers = () => {
     const {token, setToken} = useContext(AuthContext)
@@ -36,16 +37,10 @@ const Developers = () => {
     const [filter, setFilter] = useState({sort: '', query: ''}) //режим сортировки и поисковая строка
     const [modal, setModal] = useState(false) // видим ли модальное окно
 
-    const sortedDevelopers = useMemo(()=> {
-        if (filter.sort) {
-            return [...developers].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]))
-        }
-        return developers
-    }, [filter.sort, developers])
+    const sortedAndSeacrhedDevelopers = useDevelopers(developers, filter.sort, filter.query)
 
-    const sortedAndSeacrhedDevelopers = useMemo(() => {
-        return sortedDevelopers.filter(developer => developer.firstName.toLowerCase().includes(filter.query.toLowerCase()) || developer.lastName.toLowerCase().includes(filter.query.toLowerCase()))
-    }, [filter.query, sortedDevelopers])
+
+
 
     //функция обратного вызова
     //ожидает на вход нового созданного девелопера,
