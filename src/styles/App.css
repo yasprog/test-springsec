@@ -34,17 +34,17 @@
 }
 
 /*ниже для анимации добавления и удаления постов*/
-.post-enter {
+.developer-enter {
     transform: translate(-350px);
 }
-.post-enter-active {
+.developer-enter-active {
     transform: translate(0px);
     transition: all 500ms ease-in;
 }
-.post-exit {
+.developer-exit {
     opacity: 1;
 }
-.post-exit-active {
+.developer-exit-active {
     transform: translate(-350px);
     transition: all 500ms ease-in;
 }
