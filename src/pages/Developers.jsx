@@ -9,6 +9,7 @@ import MyModal from "../components/MyModal/MyModal";
 import {useDevelopers} from "../hook/useDevelopers";
 import axios from "axios";
 import Loader from "../components/UI/Loader/Loader";
+import {useFetching} from "../hook/useFetching";
 
 const Developers = () => {
     const {token, setToken} = useContext(AuthContext)
@@ -18,8 +19,11 @@ const Developers = () => {
     const [filter, setFilter] = useState({sort: '', query: ''}) //режим сортировки и поисковая строка
     const [modal, setModal] = useState(false) // видим ли модальное окно
     const sortedAndSeacrhedDevelopers = useDevelopers(developers, filter.sort, filter.query)
-    const [isDevelopersLoadind, setIsDevelopersLoading] = useState(false)
-
+    // const [isDevelopersLoading, setIsDevelopersLoading] = useState(false)
+    const [fetchDevelopers, isDevelopersLoading, developerError] = useFetching(async () =>  {
+        const developers = await DeveloperService.getAllDev(token)
+        setDevelopers(developers)
+    })
 
     const getDevelopers =  async event => {
         event.preventDefault()
@@ -47,17 +51,10 @@ const Developers = () => {
         setModal(false)
     }
 
-    async function fetchDevelopers () {
-        setIsDevelopersLoading(true)
-        setTimeout(async ()=>{
-
-            const developers = await DeveloperService.getAllDev(token)
-            setDevelopers(developers)
-            setIsDevelopersLoading(false)
-        }, 2000)
 
 
-    }
+
+
 
     //Получаем девелопера из дочернего компонента
     //filter возвращает новый массив, отфильтрованный по какому-то условию
@@ -85,7 +82,11 @@ const Developers = () => {
             <MyButton onClick={fetchDevelopers}>Кнопка fetch</MyButton>
             <MyButton onClick={getDevelopers}>Загрузить</MyButton>
 
-            {isDevelopersLoadind
+            {developerError &&
+                <h1>Произошла ошибка ${developerError}</h1>
+            }
+
+            {isDevelopersLoading
                 ?  <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
                 : <DeveloperList remove={removeDeveloper} developers={sortedAndSeacrhedDevelopers} title="Девелоперы"/>
 

@@ -7,7 +7,7 @@ export default class DeveloperService {
         // const {token} = useContext(AuthContext)
 
 
-        try {
+
             let config = {
             headers: {
                 'Content-Type': 'application/json',
@@ -16,10 +16,8 @@ export default class DeveloperService {
         }
             const response = await axios.get(serv + 'api/v1/developers/', config)
             return response.data
-        }
-        catch (e) {
-            console.log(e)
-        }
+
+
 
     }
 
