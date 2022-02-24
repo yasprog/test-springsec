@@ -10,6 +10,8 @@ import {useDevelopers} from "../hook/useDevelopers";
 import axios from "axios";
 import Loader from "../components/UI/Loader/Loader";
 import {useFetching} from "../hook/useFetching";
+import {useDeleting} from "../hook/useDeleting";
+import {useAdding} from "../hook/useAdding";
 
 const Developers = () => {
     const {token, setToken} = useContext(AuthContext)
@@ -19,21 +21,30 @@ const Developers = () => {
     const [filter, setFilter] = useState({sort: '', query: ''}) //режим сортировки и поисковая строка
     const [modal, setModal] = useState(false) // видим ли модальное окно
     const sortedAndSeacrhedDevelopers = useDevelopers(developers, filter.sort, filter.query)
-    // const [isDevelopersLoading, setIsDevelopersLoading] = useState(false)
     const [fetchDevelopers, isDevelopersLoading, developerError] = useFetching(async () =>  {
         const developers = await DeveloperService.getAllDev(token)
         setDevelopers(developers)
     })
+    const [deleteDeveloper, isDevelopersDeleting,developerDelError] = useDeleting(  async (developer) => {
+            const statusDel = await DeveloperService.delById(developer.id, token)
+            if (statusDel === 200) {
+                setDevelopers(developers.filter(d => d.id != developer.id))
+            }
+    })
 
-    const getDevelopers =  async event => {
-        event.preventDefault()
-        const qqq = await DeveloperService.getAllDev(token)
-        console.log(qqq)
+    const [addDeveloper, isDevelopersAdding,developerAddError] = useAdding(  async (developer) => {
+        const statusAdd = await DeveloperService.addDev(developer, token)
+        if (statusAdd === 200) {
+            console.log("Добавлено")
+        }
+    })
 
-    }
-
-    // const [selectedSort, setSelectedSort] = useState('')
-    // const [searchQuery, setSearchQuery] = useState('') //поисковая строка
+    // const getDevelopers =  async event => {
+    //     event.preventDefault()
+    //     const qqq = await DeveloperService.getAllDev(token)
+    //     console.log(qqq)
+    //
+    // }
 
 
     useEffect(() => {
@@ -42,27 +53,24 @@ const Developers = () => {
 
 
 
-
     //функция обратного вызова
     //ожидает на вход нового созданного девелопера,
     // и добавляет его в список
     const createDeveloper = (newDeveloper) => {
+        addDeveloper(newDeveloper)
         setDevelopers([...developers, newDeveloper])
         setModal(false)
     }
 
 
-
-
-
-
     //Получаем девелопера из дочернего компонента
     //filter возвращает новый массив, отфильтрованный по какому-то условию
     const removeDeveloper = (developer) => {
-        setDevelopers(developers.filter(d => d.id != developer.id))
+        deleteDeveloper(developer)
+
+
 
     }
-
 
 
     return (
@@ -80,13 +88,16 @@ const Developers = () => {
                filter={filter}
                setFilter={setFilter}/>
             <MyButton onClick={fetchDevelopers}>Кнопка fetch</MyButton>
-            <MyButton onClick={getDevelopers}>Загрузить</MyButton>
+
 
             {developerError &&
                 <h1>Произошла ошибка ${developerError}</h1>
             }
+            {developerDelError &&
+                <h1>Произошла ошибка ${developerDelError}</h1>
+            }
 
-            {isDevelopersLoading
+            {isDevelopersLoading || isDevelopersDeleting || isDevelopersAdding
                 ?  <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
                 : <DeveloperList remove={removeDeveloper} developers={sortedAndSeacrhedDevelopers} title="Девелоперы"/>
 
